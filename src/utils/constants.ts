@@ -5,7 +5,7 @@ export const MARKETS_URLS: string[] = [`${API_URL}/first`, `${API_URL}/second`, 
 export const MARKETS_POLLING_URLS: string[] = MARKETS_URLS.map((url) => `${url}/poll`);
 
 export const DEFAULT_VALUES: TMarketResponse = {
-  base: '',
+  base: 'CUPCAKE',
   date: '',
   rates: {
     EUR: 0,
