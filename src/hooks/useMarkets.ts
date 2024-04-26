@@ -12,18 +12,24 @@ export const useMarkets = () => {
   const subscribe = useCallback(async (props: ISubscribeProps) => {
     const { setState, url } = props;
 
-    let response = await fetch(url);
+    try {
+      let response = await fetch(url);
 
-    if (response.status == 502) {
+      if (response.status == 502) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await subscribe(props);
+      } else if (response.status != 200) {
+        console.log('Error:', response.statusText);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await subscribe(props);
+      } else {
+        let result = await response.json();
+        setState(result);
+        await subscribe(props);
+      }
+    } catch (error) {
+      console.log('Error:', error);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await subscribe(props);
-    } else if (response.status != 200) {
-      console.log('Error:', response.statusText);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await subscribe(props);
-    } else {
-      let result = await response.json();
-      setState(result);
       await subscribe(props);
     }
   }, []);
