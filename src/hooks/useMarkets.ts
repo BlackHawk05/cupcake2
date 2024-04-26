@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DEFAULT_VALUES, MARKETS_POLLING_URLS } from '../utils/constants';
 import { ISubscribeProps, TMarketData, TMarketResponse } from '../utils/types';
 import { dataNormalize } from '../utils/helpers';
 
 export const useMarkets = () => {
-  const [first, setFirst] = useState<TMarketResponse>(DEFAULT_VALUES);
-  const [second, setSecond] = useState<TMarketResponse>(DEFAULT_VALUES);
-  const [third, setThird] = useState<TMarketResponse>(DEFAULT_VALUES);
-  const [data, setData] = useState<TMarketData>({});
+  const [firstMarketData, setFirstMarketData] = useState<TMarketResponse>(DEFAULT_VALUES);
+  const [secondMarketData, setSecondMarketData] = useState<TMarketResponse>(DEFAULT_VALUES);
+  const [thirdMarketData, setThirdMarketData] = useState<TMarketResponse>(DEFAULT_VALUES);
+  const [allMarketsData, setAllMarketsData] = useState<TMarketData>({});
 
-  const subscribe = useCallback(async (props: ISubscribeProps) => {
+  const subscribe = async (props: ISubscribeProps) => {
     const { setState, url } = props;
 
     try {
@@ -32,28 +32,28 @@ export const useMarkets = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await subscribe(props);
     }
-  }, []);
+  };
 
   useEffect(() => {
     subscribe({
       url: MARKETS_POLLING_URLS[0],
-      setState: setFirst,
+      setState: setFirstMarketData,
     });
     subscribe({
       url: MARKETS_POLLING_URLS[1],
-      setState: setSecond,
+      setState: setSecondMarketData,
     });
     subscribe({
       url: MARKETS_POLLING_URLS[2],
-      setState: setThird,
+      setState: setThirdMarketData,
     });
   }, []);
 
   useEffect(() => {
-    setData(dataNormalize([first, second, third]));
-  }, [first, second, third]);
+    setAllMarketsData(dataNormalize([firstMarketData, secondMarketData, thirdMarketData]));
+  }, [firstMarketData, secondMarketData, thirdMarketData]);
 
   return {
-    data,
+    data: allMarketsData,
   };
 };
